@@ -12,4 +12,12 @@ COPY . /streamlit
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "ui.py"]
+RUN apt-get update -y && apt-get install nodejs npm -y 
+
+RUN npm i -g nodemon
+
+COPY ./start.sh /start.sh
+
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]

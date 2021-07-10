@@ -3,14 +3,20 @@ version: '3'
 services:
   fastapi:
     build: fastapi/
+    restart: always
     ports: 
       - 8000:8000
     networks:
       - deploy_network
     container_name: fastapi
+    env_file:
+      - .env
+    volumes:
+      - ./fastapi:/fastapi
 
   streamlit:
     build: streamlit/
+    restart: always
     depends_on:
       - fastapi
     ports: 
@@ -18,6 +24,10 @@ services:
     networks:
       - deploy_network
     container_name: streamlit
+    env_file:
+      - .env
+    volumes:
+      - ./streamlit:/streamlit
 
 networks:
   deploy_network:
