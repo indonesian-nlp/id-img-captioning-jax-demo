@@ -28,6 +28,8 @@ def process(text: str,
 
     return json.loads(r.text)
 
+st.set_page_config(page_title="Indonesian GPT-2 Demo")
+
 st.title("Indonesian GPT-2")
 
 st.sidebar.subheader("Configurable parameters")
