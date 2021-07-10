@@ -3,10 +3,17 @@ import uvicorn
 from transformers import pipeline
 from pydantic import BaseModel
 from fastapi import FastAPI
+import torch
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
 
 class Input(BaseModel):
     text: str
     model_name: str
+    max_len: int
+    temp: float
+    top_k: int
+    top_p: float
+    do_sample: bool
 
 class TextGenResponse(BaseModel):
     result: str
@@ -16,11 +23,15 @@ app = FastAPI(
     version="0.1.0",
 )
 
-def get_model(model_name: str):
-    nlp = pipeline(task='text-generation',
-                   model=model_name)
+model_small = GPT2LMHeadModel.from_pretrained("flax-community/gpt2-small-indonesian")
+tokenizer_small = GPT2Tokenizer.from_pretrained("flax-community/gpt2-small-indonesian")
 
-    return nlp
+MODELS = {
+    "GPT-2 Small": (
+        model_small,
+        tokenizer_small
+    )
+}
 
 @app.get('/')
 def get_root():
@@ -28,10 +39,18 @@ def get_root():
 
 @app.post('/generate/', response_model=TextGenResponse)
 def query_gpt(item: Input):
-    nlp = get_model(item.model_name)
-    result = nlp(item.text)
+    model, tokenizer = MODELS[item.model_name]
 
-    text = result[0]["generated_text"]
+    input_ids = tokenizer.encode(item.text, return_tensors='pt')
+    output = model.generate(input_ids=input_ids,
+                            max_length=item.max_len,
+                            temperature=item.temp,
+                            top_k=item.top_k,
+                            top_p=item.top_p,
+                            do_sample=item.do_sample)
+
+    text = tokenizer.decode(output[0], 
+                            skip_special_tokens=True)
 
     return {'result': text}
 
