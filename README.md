@@ -24,3 +24,6 @@ If you're in a debugging mode, change the `DEBUG` variable in `.env` to enable h
 
 - FastAPI documentation: http://localhost:8000  
 - Streamlit UI: http://localhost:8501
+
+## Credits
+Base template from [here](https://github.com/davidefiocco/streamlit-fastapi-model-serving).
