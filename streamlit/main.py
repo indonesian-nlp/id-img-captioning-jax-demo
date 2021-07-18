@@ -49,6 +49,8 @@ if st.button("Run"):
         if input_image:
             caption = process(image=input_image, server_url=backend, max_len=max_len, num_beams=num_beams)
             st.subheader("Result")
+            image = Image.open(input_image).convert("RGB")
+            st.image(image, use_column_width=True)
             st.write(caption["result"].replace("<pad>", ""))
             st.text("English translation")
             st.write(translate(caption["result"], "en", "id").replace("<pad>", ""))
